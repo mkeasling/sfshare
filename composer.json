@@ -1,0 +1,24 @@
+{
+  "name": "handdipped/sfshare",
+  "description": "share sf logins",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "matthew keasling",
+      "email": "mkeasling@gmail.com"
+    }
+  ],
+  "require": {
+    "psr/log": "^1.0",
+    "phpunit/phpunit": "^4.8",
+    "auth0/auth0-php": "~1.0",
+    "symfony/yaml": "^2.7",
+    "mandrill/mandrill": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sfshare\\": "includes"
+    }
+  }
+}
