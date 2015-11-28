@@ -8,12 +8,12 @@ if(!empty($_POST) && isset($_POST['mail'])){
 ?>
 <h2>Manage Users</h2>
 <ul id="maintabs" class="nav nav-tabs" role="tablist">
-    <li class="active"><a href="#idb">IDB User Accounts</a></li>
-    <li><a href="#sf">Salesforce User Accounts</a></li>
+    <li class="active"><a href="#local">User Accounts</a></li>
+    <li><a href="#sf">Salesforce Accounts</a></li>
 </ul>
 <div class="tab-content">
-    <div id="idb" class="tab-pane active">
-        <?php render('manage_idb'); ?>
+    <div id="local" class="tab-pane active">
+        <?php render('manage_local'); ?>
     </div>
     <div id="sf" class="tab-pane">
         <?php render('manage_sf'); ?>

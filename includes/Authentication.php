@@ -39,7 +39,7 @@ class Authentication extends Singleton
                 }
                 if (!isset($this->db_user)) {
                     $this->_db_user = $this->db->query_one(
-                        'SELECT * FROM idb_users WHERE auth0_user_id=? AND username=?',
+                        'SELECT * FROM local_users WHERE auth0_user_id=? AND username=?',
                         $this->user['user_id'],
                         $this->user['username']
                     );
@@ -69,7 +69,7 @@ class Authentication extends Singleton
             throw new \Exception('You must be logged in to perform this function.');
         }
         if ($this->db_user === false) {
-            $sql = 'INSERT INTO idb_users (auth0_user_id, username, email) VALUES (?, ?, ?)';
+            $sql = 'INSERT INTO local_users (auth0_user_id, username, email) VALUES (?, ?, ?)';
             $this->db->query($sql, $this->user['user_id'], $this->user['username'], $this->user['email']);
 
             Mail::instance()->sendToAdmins('New User',$this->getNewUserMessage());

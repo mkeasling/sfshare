@@ -23,7 +23,7 @@ class Mail extends Singleton
 
     public function sendToAdmins($subject, $html, $from_email = null, $from_name = null)
     {
-        $admins = Database::instance()->query('SELECT DISTINCT email FROM idb_users WHERE is_admin=1 AND is_active=1');
+        $admins = Database::instance()->query('SELECT DISTINCT email FROM local_users WHERE is_admin=1 AND is_active=1');
         $emails = array();
         foreach ($admins as $admin) {
             $emails[] = $admin->email;

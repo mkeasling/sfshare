@@ -20,12 +20,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table idb_users
+# Dump of table local_users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `idb_users`;
+DROP TABLE IF EXISTS `local_users`;
 
-CREATE TABLE `idb_users` (
+CREATE TABLE `local_users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
@@ -44,7 +44,7 @@ CREATE TABLE `idb_users` (
 
 DELIMITER ;;
 /*!50003 SET SESSION SQL_MODE="" */;;
-/*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `set created` BEFORE INSERT ON `idb_users` FOR EACH ROW IF NEW.created_date IS NULL THEN
+/*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `set created` BEFORE INSERT ON `local_users` FOR EACH ROW IF NEW.created_date IS NULL THEN
   SET NEW.created_date = NOW(),
   NEW.updated_date=NOW();
 ELSE
@@ -52,7 +52,7 @@ ELSE
   NEW.updated_date=NOW();
 END IF */;;
 /*!50003 SET SESSION SQL_MODE="" */;;
-/*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `set updated` BEFORE UPDATE ON `idb_users` FOR EACH ROW SET NEW.updated_date = NOW() */;;
+/*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `set updated` BEFORE UPDATE ON `local_users` FOR EACH ROW SET NEW.updated_date = NOW() */;;
 DELIMITER ;
 /*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
