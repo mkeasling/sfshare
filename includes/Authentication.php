@@ -11,6 +11,7 @@ namespace Sfshare;
 use Auth0\SDK\Auth0;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
 class Authentication extends Singleton
 {
@@ -107,6 +108,8 @@ class Authentication extends Singleton
         if ($sf_user === false) {
             throw new \Exception('Could not retrieve SF account information.');
         }
+        $sf_user->password = Crypt::decrypt($sf_user->password);
+        $sf_user->security_token = Crypt::decrypt($sf_user->security_token);
         return $this->sf_request($sf_user);
     }
 
@@ -172,15 +175,20 @@ class Authentication extends Singleton
 </env:Envelope>
 EOF;
         $client = new Client();
-        $response = $client->post($address,
-            array(
-                'headers' => $headers,
-                'body' => $body
-            )
-        );
-        try{
+        try {
+            $response = $client->post($address,
+                array(
+                    'headers' => $headers,
+                    'body' => $body
+                )
+            );
             $body = $response->getBody();
-        }catch(ClientException $e){
+        }catch(ServerException $e){
+            error_log($body);
+            error_log($e->getResponse()->getBody());
+            error_log(print_r($e->getResponse(),true));
+            throw $e;
+        }catch(\Exception $e){
             error_log(print_r($e->getResponse(),true));
             throw $e;
         }
