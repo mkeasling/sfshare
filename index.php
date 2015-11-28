@@ -1,10 +1,12 @@
 <?php
 /**
+ *
  * Created by IntelliJ IDEA.
  * User: mkeasling
  * Date: 11/27/15
  * Time: 2:39 PM
  */
+ob_start();
 
 require_once '_bootstrap.php';
 
@@ -52,3 +54,5 @@ require_once '_bootstrap.php';
     </div>
 </body>
 </html>
+<?php
+ob_end_flush();

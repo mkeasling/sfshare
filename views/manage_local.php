@@ -10,7 +10,8 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
         $user_ids[] = $uid;
     }
     $users_by_id = array();
-    foreach($db->query('SELECT id, email, is_active, sf_user_id FROM local_users WHERE id IN ('.implode(',',$user_ids).')') as $user) {
+    foreach ($db->query('SELECT id, email, is_active, sf_user_id FROM local_users WHERE id IN (' . implode(',',
+            $user_ids) . ')') as $user) {
         $users_by_id[$user->id] = $user;
     }
     $emails = array();
@@ -18,31 +19,33 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
     $clauses = array();
     $values = array();
     foreach ($_POST['local_users'] as $uid => $user) {
-        if($uid==-1){
-            if(empty($user['email']) || empty($user['sf_user_id'])){
+        if ($uid == -1) {
+            if (empty($user['email']) || empty($user['sf_user_id'])) {
                 continue;
             }
             $uid = null;
         }
-        if(isset($user['is_active']) && !empty($user['sf_user_id']) && isset($users_by_id[$uid])){
+        if (isset($user['is_active']) && !empty($user['sf_user_id']) && isset($users_by_id[$uid])) {
             $orig = $users_by_id[$uid];
-            if(!$orig->is_active || empty($orig->sf_user_id)){
+            if (!$orig->is_active || empty($orig->sf_user_id)) {
                 $emails[] = $user['email'];
             }
         }
         $clauses[] = '(?,?,?,?,?,?,?,?)';
         $values[] = $uid;
-        $values[] = empty($user['sf_user_id'])?null:$user['sf_user_id'];
+        $values[] = empty($user['sf_user_id']) ? null : $user['sf_user_id'];
         $values[] = isset($user['is_active']) ? 1 : 0;
         $values[] = isset($user['is_admin']) ? 1 : 0;
         $values[] = $user['auth0_user_id'];
         $values[] = $user['username'];
-        $values[] = $user['created_date'];
+        $values[] = empty($user['created_date']) ? null : $user['created_date'];
         $values[] = $user['email'];
     }
     $sql .= implode(',', $clauses);
     $db->query($sql, $values);
-    \Sfshare\Mail::instance()->send(implode(',',$emails),'Account activated','<p>Your request to use a shared SF login has been approved.</p><p>Please <a href="http://sfshare.handdipped.biz">log on now</a>.</p>');
+    \Sfshare\Mail::instance()->send(implode(',', $emails), 'Account activated',
+        '<p>Your request to use a shared SF login has been approved.</p><p>Please <a href="http://sfshare.handdipped.biz">log on now</a>.</p>');
+    header('Location: /manage');
 }
 $users = $db->query('SELECT * FROM local_users ORDER BY is_active DESC, username ASC, email ASC');
 $users[] = json_decode('{"id":-1,"is_active":null,"is_admin":null,"sf_user_id":null,"auth0_user_id":null,"username":null,"created_date":null,"updated_date":null,"email":null}');
@@ -69,15 +72,15 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                     <input
                         type="hidden"
                         name="local_users[<?php echo $user->id; ?>][auth0_user_id]"
-                        value="<?php echo $user->auth0_user_id; ?>" />
+                        value="<?php echo $user->auth0_user_id; ?>"/>
                     <input
                         type="hidden"
                         name="local_users[<?php echo $user->id; ?>][username]"
-                        value="<?php echo $user->username; ?>" />
+                        value="<?php echo $user->username; ?>"/>
                     <input
                         type="hidden"
                         name="local_users[<?php echo $user->id; ?>][created_date]"
-                        value="<?php echo $user->created_date; ?>" />
+                        value="<?php echo $user->created_date; ?>"/>
                 </td>
                 <td><input
                         type="email"
@@ -92,7 +95,7 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                         <?php foreach ($sfusers as $sf): ?>
                             <option
                                 value="<?php echo $sf->id; ?>"
-                                <?php if($sf->id==$user->sf_user_id): ?>selected="selected"<?php endif; ?>
+                                <?php if ($sf->id == $user->sf_user_id): ?>selected="selected"<?php endif; ?>
                                 ><?php echo $sf->username; ?></option>
                         <?php endforeach; ?>
                     </select>

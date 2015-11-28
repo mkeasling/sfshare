@@ -13,7 +13,6 @@ class Crypt
 {
 
     public static function encrypt($data){
-        error_log('encrypt: '.$data);
         $key = Config::instance()->security['encryption_key'];
         $key = hash('sha256', $key, true);
 
