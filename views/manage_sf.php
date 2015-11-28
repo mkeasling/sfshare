@@ -7,8 +7,14 @@ if (!empty($_POST) && !empty($_POST['sf_users']) && isset($_POST['sf_submit'])) 
     $statements = [];
     $values = [];
     foreach ($_POST['sf_users'] as $uid => $user) {
-        if(!isset($user['is_active'])){
+        if (!isset($user['is_active'])) {
             $user['is_active'] = 0;
+        }
+        if (!empty($user['password'])) {
+            $user['password'] = \Sfshare\Crypt::encrypt($user['password']);
+        }
+        if (!empty($user['security_token'])) {
+            $user['security_token'] = \Sfshare\Crypt::encrypt($user['security_token']);
         }
         $sql = '';
         if ($uid > 0) {
@@ -54,6 +60,12 @@ $users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token
         </thead>
         <tbody>
         <?php foreach ($users as $user): ?>
+            <?php
+            /**/
+            $user->password = \Sfshare\Crypt::decrypt($user->password);
+            $user->security_token = \Sfshare\Crypt::decrypt($user->security_token);
+            /**/
+            ?>
             <tr>
                 <td>
                     <input
@@ -86,12 +98,14 @@ $users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token
                     <select name="sf_users[<?php echo $user->id; ?>][type]">
                         <option
                             value="production"
-                            <?php if($user->type=='production'): ?>selected="selected"<?php endif; ?>
-                        >Production</option>
+                            <?php if ($user->type == 'production'): ?>selected="selected"<?php endif; ?>
+                            >Production
+                        </option>
                         <option
                             value="sandbox"
-                            <?php if($user->type=='sandbox'): ?>selected="selected"<?php endif; ?>
-                            >Sandbox</option>
+                            <?php if ($user->type == 'sandbox'): ?>selected="selected"<?php endif; ?>
+                            >Sandbox
+                        </option>
                     </select>
                 </td>
             </tr>
