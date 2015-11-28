@@ -37,7 +37,7 @@ class Authentication extends Singleton
                 if (!isset($this->user) || !$this->user) {
                     throw new NotLoggedInException('You are not logged in.');
                 }
-                if (!isset($this->db_user)) {
+                if (!isset($this->_db_user)) {
                     $this->_db_user = $this->db->query_one(
                         'SELECT * FROM local_users WHERE auth0_user_id=? AND username=?',
                         $this->user['user_id'],
@@ -68,13 +68,36 @@ class Authentication extends Singleton
         if (!$this->is_logged_in) {
             throw new \Exception('You must be logged in to perform this function.');
         }
+        // Find the db user (by auth0_user_id and username, first)
         if ($this->db_user === false) {
-            $sql = 'INSERT INTO local_users (auth0_user_id, username, email) VALUES (?, ?, ?)';
-            $this->db->query($sql, $this->user['user_id'], $this->user['username'], $this->user['email']);
 
-            Mail::instance()->sendToAdmins('New User',$this->getNewUserMessage());
+            // If that's not found, then look by email.
+            $user_by_email = $this->db->query_one(
+                'SELECT * FROM local_users WHERE email=? AND is_active=1',
+                $this->user['email']
+            );
 
-            throw new NewUserException('User not found.');
+            // If that's still not found, then they're a new user.
+            // Create a record, send an admin message, explain it to the user.
+            if($user_by_email === false){
+                $sql = 'INSERT INTO local_users (auth0_user_id, username, email) VALUES (?, ?, ?)';
+                $this->db->query($sql, $this->user['user_id'], $this->user['username'], $this->user['email']);
+
+                Mail::instance()->sendToAdmins('New User',$this->getNewUserMessage());
+                throw new NewUserException('User not found.');
+            }
+
+            // Here, we've found a user record by email, but it doesn't match on auth0_user_id and username.
+            // Likely because a record was created before the auth0 registration went through.
+            // Update the existing record with these details.
+            $this->db->query(
+                'UPDATE local_users SET auth0_user_id=?,username=? WHERE email=? AND is_active=1',
+                $this->user['user_id'],
+                $this->user['username'],
+                $this->user['email']
+            );
+            // Clear our cached db_user object, so it will re-query before continuing.
+            unset($this->_db_user);
         }
         if (!$this->db_user->is_active) {
             Mail::instance()->sendToAdmins('New User',$this->getNewUserMessage());
@@ -134,7 +157,8 @@ class Authentication extends Singleton
 
     private function sf_request($sf_user)
     {
-        $address = 'https://login.salesforce.com/services/Soap/u/27.0';
+        $type = $sf_user->type=='sandbox'?'test':'login';
+        $address = 'https://'.$type.'.salesforce.com/services/Soap/u/27.0';
         $headers = array('SOAPAction' => 'login', 'Content-type' => 'text/xml');
         $body = <<<EOF
 <?xml version="1.0" encoding="utf-8" ?>

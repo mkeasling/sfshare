@@ -18,7 +18,13 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
     $clauses = array();
     $values = array();
     foreach ($_POST['local_users'] as $uid => $user) {
-        if(isset($user['is_active']) && !empty($user['sf_user_id'])){
+        if($uid==-1){
+            if(empty($user['email']) || empty($user['sf_user_id'])){
+                continue;
+            }
+            $uid = null;
+        }
+        if(isset($user['is_active']) && !empty($user['sf_user_id']) && isset($users_by_id[$uid])){
             $orig = $users_by_id[$uid];
             if(!$orig->is_active || empty($orig->sf_user_id)){
                 $emails[] = $user['email'];
@@ -38,7 +44,8 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
     $db->query($sql, $values);
     \Sfshare\Mail::instance()->send(implode(',',$emails),'Account activated','<p>Your request to use a shared SF login has been approved.</p><p>Please <a href="http://sfshare.handdipped.biz">log on now</a>.</p>');
 }
-$users = $db->query('SELECT * FROM local_users');
+$users = $db->query('SELECT * FROM local_users ORDER BY is_active DESC, username ASC, email ASC');
+$users[] = json_decode('{"id":-1,"is_active":null,"is_admin":null,"sf_user_id":null,"auth0_user_id":null,"username":null,"created_date":null,"updated_date":null,"email":null}');
 $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
 ?>
 <form method="POST">
@@ -46,19 +53,19 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
         <thead>
         <tr>
             <th>Username</th>
+            <th>Email</th>
             <th>SF Account</th>
             <th>Active?</th>
             <th>Admin?</th>
             <th>Created Date</th>
             <th>Last Updated Date</th>
-            <th>Email</th>
         </tr>
         </thead>
         <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
                 <td>
-                    <?php echo $user->username; ?>
+                    <?php echo $user->username ?: '<i>new user</i>'; ?>
                     <input
                         type="hidden"
                         name="local_users[<?php echo $user->id; ?>][auth0_user_id]"
@@ -71,6 +78,12 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                         type="hidden"
                         name="local_users[<?php echo $user->id; ?>][created_date]"
                         value="<?php echo $user->created_date; ?>" />
+                </td>
+                <td><input
+                        type="email"
+                        name="local_users[<?php echo $user->id; ?>][email]"
+                        value="<?php echo $user->email; ?>"
+                        />
                 </td>
                 <td><select
                         name="local_users[<?php echo $user->id; ?>][sf_user_id]"
@@ -100,12 +113,6 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                 </td>
                 <td><?php echo $user->created_date; ?></td>
                 <td><?php echo $user->updated_date; ?></td>
-                <td><input
-                        type="email"
-                        name="local_users[<?php echo $user->id; ?>][email]"
-                        value="<?php echo $user->email; ?>"
-                        />
-                </td>
             </tr>
         <?php endforeach; ?>
         </tbody>

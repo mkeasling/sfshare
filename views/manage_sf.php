@@ -7,6 +7,9 @@ if (!empty($_POST) && !empty($_POST['sf_users']) && isset($_POST['sf_submit'])) 
     $statements = [];
     $values = [];
     foreach ($_POST['sf_users'] as $uid => $user) {
+        if(!isset($user['is_active'])){
+            $user['is_active'] = 0;
+        }
         $sql = '';
         if ($uid > 0) {
             $sql = 'UPDATE sf_users SET ';
@@ -23,7 +26,7 @@ if (!empty($_POST) && !empty($_POST['sf_users']) && isset($_POST['sf_submit'])) 
             $fields = [];
             $places = [];
             foreach ($user as $key => $val) {
-                $fields[] = $key;
+                $fields[] = "`{$key}`";
                 $places[] = '?';
                 $values[] = $val;
             }
@@ -32,12 +35,12 @@ if (!empty($_POST) && !empty($_POST['sf_users']) && isset($_POST['sf_submit'])) 
         $statements[] = $sql;
     }
     $sql = implode(';', $statements);
-    error_log($sql);
-    error_log(print_r($values,true));
+//    error_log($sql);
+//    error_log(print_r($values,true));
     $db->query($sql, $values);
 }
 $users = $db->query('SELECT * FROM sf_users WHERE is_active=1');
-$users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token":null,"is_active":null}');
+$users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token":null,"is_active":null,"type":"production"}');
 ?>
 <form method="POST">
     <table class="table">
@@ -78,6 +81,18 @@ $users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token
                         value="1"
                         <?php if ($user->is_active): ?>checked="checked"<?php endif; ?>
                         />
+                </td>
+                <td>
+                    <select name="sf_users[<?php echo $user->id; ?>][type]">
+                        <option
+                            value="production"
+                            <?php if($user->type=='production'): ?>selected="selected"<?php endif; ?>
+                        >Production</option>
+                        <option
+                            value="sandbox"
+                            <?php if($user->type=='sandbox'): ?>selected="selected"<?php endif; ?>
+                            >Sandbox</option>
+                    </select>
                 </td>
             </tr>
         <?php endforeach; ?>
