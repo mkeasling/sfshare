@@ -64,13 +64,16 @@ if(!empty($_POST) && isset($_POST['mail'])){
         </p>
     </div>
 </div>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
     (function($){
         $(document).ready(function(){
             $('#maintabs a').click(function (e) {
                 e.preventDefault()
                 $(this).tab('show')
-            })
+            });
+            $('table.table').DataTable();
         });
     }(jQuery));
 </script>

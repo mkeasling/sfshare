@@ -1,0 +1,17 @@
+site:
+  title : Your site title here
+auth0:
+  domain          : yourdomain.auth0.com
+  client_id       : your_auth0_client_id
+  client_secret   : your_auth0_secret
+  redirect_uri_sf : http://yourdomain.com/logged
+  redirect_uri    : http://yourdomain.com/manage
+  logout_uri      : http://yourdomain.com
+database:
+  dsn      : mysql:host=127.0.0.1;dbname=yourdbname
+  username : dbuser
+  password : dbpass
+mandrill:
+  api_key : your_mandrill_api_key
+security:
+  encryption_key : random_encryption_key
