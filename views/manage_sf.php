@@ -46,7 +46,7 @@ if (!empty($_POST) && !empty($_POST['sf_users']) && isset($_POST['sf_submit'])) 
     $db->query($sql, $values);
     header('Location: /manage');
 }
-$users = $db->query('SELECT * FROM sf_users WHERE is_active=1 ORDER BY type, username');
+$users = $db->query('SELECT * FROM sf_users ORDER BY type, username');
 $users[] = json_decode('{"id":-1,"username":null,"password":null,"security_token":null,"is_active":null,"type":"production"}');
 ?>
 <form method="POST">
