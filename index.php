@@ -44,7 +44,7 @@ require_once '_bootstrap.php';
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div>
-                <a class="navbar-brand" href="#">SF Share</a>
+                <a class="navbar-brand" href="#"><?php echo \Sfshare\Config::instance()->site['title']; ?></a>
                 <?php render($auth->is_logged ? 'header/logout' : 'header/login'); ?>
             </div>
         </div>
