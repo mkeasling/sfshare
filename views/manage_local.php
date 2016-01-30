@@ -49,7 +49,7 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
 }
 $users = $db->query('SELECT * FROM local_users ORDER BY is_active DESC, username ASC, email ASC');
 $users[] = json_decode('{"id":-1,"is_active":null,"is_admin":null,"sf_user_id":null,"auth0_user_id":null,"username":null,"created_date":null,"updated_date":null,"email":null}');
-$sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
+$sfusers = $db->query('SELECT id, username FROM sf_users WHERE is_active=1 ORDER BY username');
 $sfusermap = array();
 foreach($sfusers as $sf){
     $sfusermap[$sf->id] = $sf->username;
