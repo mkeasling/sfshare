@@ -26,7 +26,7 @@ if ($auth->is_logged_in){
 } else {
     ?>
     <div class="jumbotron">
-        <h1>SF Share</h1>
+        <h1><?php echo \Sfshare\Config::instance()->site['title']; ?></h1>
 
         <p>Click here to login and go to Salesforce:</p>
 

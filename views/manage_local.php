@@ -50,6 +50,10 @@ if (!empty($_POST) && !empty($_POST['local_users'])) {
 $users = $db->query('SELECT * FROM local_users ORDER BY is_active DESC, username ASC, email ASC');
 $users[] = json_decode('{"id":-1,"is_active":null,"is_admin":null,"sf_user_id":null,"auth0_user_id":null,"username":null,"created_date":null,"updated_date":null,"email":null}');
 $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
+$sfusermap = array();
+foreach($sfusers as $sf){
+    $sfusermap[$sf->id] = $sf->username;
+}
 ?>
 <form method="POST">
     <table class="table">
@@ -82,13 +86,17 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                         name="local_users[<?php echo $user->id; ?>][created_date]"
                         value="<?php echo $user->created_date; ?>"/>
                 </td>
-                <td><input
+                <td>
+                    <div class="hidden"><?php echo $user->email; ?></div>
+                    <input
                         type="email"
                         name="local_users[<?php echo $user->id; ?>][email]"
                         value="<?php echo $user->email; ?>"
                         />
                 </td>
-                <td><select
+                <td>
+                    <div class="hidden"><?php echo isset($sfusermap[$user->sf_user_id])?$sfusermap[$user->sf_user_id]:''; ?></div>
+                    <select
                         name="local_users[<?php echo $user->id; ?>][sf_user_id]"
                         value="<?php echo $user->sf_user_id; ?>">
                         <option value="">-- Select a SF User --</option>
@@ -100,14 +108,18 @@ $sfusers = $db->query('SELECT id, username FROM sf_users ORDER BY username');
                         <?php endforeach; ?>
                     </select>
                 </td>
-                <td><input
+                <td>
+                    <div class="hidden"><?php echo $user->is_active?'a':'b'; ?></div>
+                    <input
                         type="checkbox"
                         name="local_users[<?php echo $user->id; ?>][is_active]"
                         value="1"
                         <?php if ($user->is_active): ?>checked="checked"<?php endif; ?>
                         />
                 </td>
-                <td><input
+                <td>
+                    <div class="hidden"><?php echo $user->is_admin?'a':'b'; ?></div>
+                    <input
                         type="checkbox"
                         name="local_users[<?php echo $user->id; ?>][is_admin]"
                         value="1"
