@@ -30,6 +30,8 @@ require_once '_bootstrap.php';
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
     <!-- Site theme -->
     <link rel="stylesheet" href="/public/sfshare.css">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/public/favicon.png">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
