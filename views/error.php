@@ -13,5 +13,6 @@ use Sfshare\View;
     <p>
         <strong>Message: </strong>
         <?php echo View::instance()->exception->getMessage(); ?>
+        <pre style="display: none;"><?php print_r(View::instance()->exception); ?></pre>
     </p>
 </div>
