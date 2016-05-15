@@ -58,7 +58,7 @@ class Authentication extends Singleton
             case 'js_block':
                 return $this->get_js_block();
             case 'logout_url':
-                return 'https://' . $this->config->auth0['domain'] . '/logout?returnTo=' . $this->config->auth0['logout_uri'];
+                return 'https://' . $this->config->auth0['domain'] . '/logout?returnTo=' . $this->config->auth0['logout_uri'] . '&client_id=' . $this->config->auth0['client_id'];
             default:
                 throw new Exception('Invalid property');
         }
@@ -132,7 +132,7 @@ class Authentication extends Singleton
     public function js_block()
     {
         ?>
-        <script src="https://cdn.auth0.com/js/lock-7.9.min.js"></script>
+        <script src="https://cdn.auth0.com/js/lock-9.1.min.js"></script>
         <script type="text/javascript">
 
             var lock = new Auth0Lock('<?php echo $this->config->auth0['client_id']; ?>', '<?php echo $this->config->auth0['domain']; ?>');

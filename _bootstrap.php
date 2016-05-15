@@ -15,6 +15,14 @@ require_once 'vendor/autoload.php';
 use Sfshare\Config;
 use Sfshare\Authentication;
 
+set_exception_handler(function (\Exception $e) {
+    \Sfshare\View::instance()->exception = $e;
+    render('error');
+});
+set_error_handler(function ($errno, $errstr, $errfile = null, $errline = null, $errcontext = null) {
+    throw new \Exception($errstr);
+});
+
 $config = Config::instance();
 $config->load(BASE . '/config.yml');
 $auth = Authentication::instance();
@@ -58,10 +66,3 @@ function render($file, $backup = null)
     include($file);
 }
 
-set_exception_handler(function (\Exception $e) {
-    \Sfshare\View::instance()->exception = $e;
-    render('error');
-});
-set_error_handler(function ($errno, $errstr, $errfile = null, $errline = null, $errcontext = null) {
-    throw new \Exception($errstr);
-});
